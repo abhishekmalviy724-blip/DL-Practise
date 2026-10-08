@@ -126,3 +126,14 @@ A2 = 1/(1+np.exp(-Z2))
 pred = np.where(A2)
 print(pred)
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+# ReLU Neuron with ...
+import numpy as np
+import pandas as pd
+a=pd.read_csv("healthcare_dataset.csv")
+X=np.array(a[["Age","Billing Amount","Room Number"]])
+y=np.where(a["Test Results"]=="Normal",1,0)
+w=np.array([0.0,0.0,0.0])
+b=0.1
+z = X @ w + b
+print(1/(1+np.exp(-z)))
+print(np.maximum(0,z))
