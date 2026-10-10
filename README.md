@@ -137,3 +137,28 @@ b=0.1
 z = X @ w + b
 print(1/(1+np.exp(-z)))
 print(np.maximum(0,z))
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________import numpy as np
+from sklearn.metrics import mean_squared_error
+
+
+X = np.array([[1.0], [2.0], [3.0], [4.0]])
+y = np.array([[2.0], [4.0], [6.0], [8.0]])
+w = 0.5
+b = 1.0
+lr = 0.1
+gr = 0.2
+N = len(X)
+z = X * w + b
+print(z)
+pred=1/(1+np.exp(-z))
+print(pred)
+print(mean_squared_error(y,z))
+dw = (2/N)*np.max((z-y)*X)
+db = (2/N)*np.sum(z-y)
+print(dw)
+print(db)
+print(w - lr * dw)
+print(b - lr * db)
+print(pred*(1-pred))
+print(pred-y)
+
