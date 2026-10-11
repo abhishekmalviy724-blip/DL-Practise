@@ -239,4 +239,105 @@ print("First 10 Predictions:")
 print(predictions[:10].flatten())
 print("First 10 Actual Values:")
 print(y[:10].flatten())
+_____________________________________________________________
+import numpy as np
+X=np.array([[2.0,3.0]])
+w1 = np.array([
+    [0.1,0.2],
+    [0.3,0.4]
+])
+b1 = np.array([[0.1,0.2]])
+w2 = np.array([
+    [0.5],
+    [0.6]
+])
+b2 = np.array([
+    [0.2]
+])
+z1 = X @ w1 + b1
+a1 = np.maximum(0,z1)
+z2 = a1[:,None] @ w2 + b2
+a2 = 1/(1+np.exp(-z2))
+
+import numpy as np
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+y_true = np.array([1.0, 0.0, 1.0, 1.0])
+y_pred = np.array([0.8, 0.3, 0.6, 0.9])
+loss = -np.mean(y_true * np.log(y_pred) + (1-y_true)* np.log(1-y_pred))
+loss
+
+import numpy as np
+X = np.array([[2.0], [3.0]])
+y_true = np.array([[1.0], [0.0]])
+y_pred = np.array([[0.8], [0.3]])
+err = y_pred - y_true
+gr = X.T @ err / len(y_true)
+print(np.mean(err))
+print(err)
+print(gr)
+
+import numpy as np
+
+w = np.array([[0.5]])
+b = 0.1
+
+dw = np.array([[-0.15]])
+db = -0.05
+
+learning_rate = 0.1
+w = w - learning_rate * dw
+b = b - learning_rate * db
+print(w)
+print(b)
+
+
+import numpy as np
+
+X = np.array([[1.0], [2.0]])
+y = np.array([[1.0], [0.0]])
+
+w = np.array([[0.5]])
+b = 0.1
+
+learning_rate = 0.1
+z = X @ w + b
+a1 = 1/(1+np.exp(-z))
+err = a1 - y
+dw = X.T @ err / len(y)
+db = np.mean(err)
+w = w + learning_rate * dw
+b = b + learning_rate * db
+z
+a1
+err
+dw
+db
+w
+b
+
+
+import numpy as np
+X = np.array([[1.0], [2.0]])
+y = np.array([[1.0], [0.0]])
+
+w = np.array([[0.5]])
+b = 0.1
+learning_rate = 0.1
+for i in range(100):
+    z = X @ w + b
+    pred = 1/(1+np.exp(-z))
+    err = pred - y
+    dw = X.T @ err/len(y)
+    db = np.mean(err)
+    w = w - learning_rate * dw
+    b = b - learning_rate * db
+print(w)
+print(b)
+print(err)
+print(pred)
+print(z)
+
+
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
