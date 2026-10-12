@@ -472,4 +472,40 @@ f = e/np.sum(e)
 print(f)
 print(np.sum(f,axis=1))
 print(np.argmax(f,axis=1,keepdims=True))
+_______________________________________________
+import numpy as np
+y_true = 1
+y_pred = 0.8
+loss = -(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+loss
+_________________________________________________________________________
+y_true = 0
+y_pred = 0.8
+print(-(y_true * np.log(y_pred)+ (1-y_true)* np.log(1-y_pred)))
+____________________________________________________________________
+import numpy as np
+y_true = 2
+y_pred = np.array([0.1, 0.2, 0.7])
+print(-(y_true * np.log(y_pred) + (1-y_true) * np.log(1-y_pred)))
+print(-np.log(y_pred[y_true]))
+___________________________________________________________________
+import numpy as np
+y_true = 0
+y_pred = np.array([0.6, 0.3, 0.1])
+print(-(y_true)*np.log(y_pred) + (1-y_true) * np.log(1-y_pred))
+print(-np.log(y_pred[y_true]))
+______________________________________________________________________
+y_true = 0
+y_pred = 0.3
+print(-(y_true * np.log(y_pred) + (1 - y_true) * np.log(1-y_pred)))
+_______________________________________________________________________
+import numpy as np
+y_true = 3
+y_pred = np.array([0.1, 0.2, 0.3, 0.4])
+print(-np.log(y_pred[y_true]))
+_____________________________________________
+import numpy as np
+y_true = 3
+y_pred = np.array([0.1, 0.6, 0.2, 0.1])
+print(-(np.log(y_pred[y_true])))
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
