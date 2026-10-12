@@ -364,3 +364,112 @@ print(w)
 print(b)
 
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+import numpy as np
+z = np.array([2.0, 1.0, 0.1])
+a = np.exp(z)
+su = np.sum(a)
+print(a/su)
+______________________________
+import numpy as np
+
+z = np.array([
+    [2.0, 1.0, 0.1],
+    [1.0, 3.0, 2.0],
+    [0.5, 0.2, 1.5]
+])
+a = np.exp(z)
+b = np.sum(a,axis=1,keepdims=True)
+print(a/b)
+_____________________________________
+import numpy as np
+
+z = np.array([
+    [1000.0, 1001.0, 1002.0],
+    [500.0, 502.0, 501.0]
+])
+b = np.max(z,axis=1,keepdims=True)
+sub = b-z
+exp = np.exp(sub)
+su = np.sum(exp,axis=1,keepdims=True)
+print(exp/su)
+_________________________________________
+z = np.array([3.0, 1.0, 2.0])
+a = np.max(z)-z
+b = np.exp(a)
+c = np.exp(z - np.max(z))
+d = c/np.sum(c)
+print(np.max(d))
+________________________________________
+z = np.array([3.0, 1.0, 2.0])
+a = np.exp(z - np.max(z))
+b = a/np.sum(a)
+c = np.sum(b)
+c
+____________________________________
+z = np.array([3.0, 1.0, 2.0])
+a = np.exp(z - np.max(z))
+b = a/np.sum(a)
+print(np.argmax(b))
+________________________________
+import numpy as np
+z = np.array([
+    [2.0, 5.0, 1.0],
+    [7.0, 2.0, 3.0],
+    [1.0, 4.0, 6.0]
+])
+a = z - np.max(z)
+b = np.exp(a)
+c = b/np.sum(b,axis=1,keepdims=True)
+print(c)
+______________________________________
+import numpy as np
+z = np.array([
+    [2.0, 5.0, 1.0],
+    [7.0, 2.0, 3.0],
+    [1.0, 4.0, 6.0]
+])
+a = z - np.max(z, axis=1, keepdims=True)
+b = np.exp(a)
+c = b / np.sum(b, axis=1, keepdims=True)
+d=np.argmax(c,axis=1,keepdims=True)
+print(np.sum(d,axis=1,keepdims=True))
+________________________________________
+import numpy as np
+
+z = np.array([
+    [2.0, 5.0, 1.0],
+    [7.0, 2.0, 3.0],
+    [1.0, 4.0, 6.0]
+])
+a = z - np.max(z)
+b = np.exp(a)
+c = b/np.sum(b,axis = 1, keepdims=True)
+print(np.argmax(c,axis = 1, keepdims=True))
+________________________________________________
+import numpy as np
+X = np.array([
+    [1.0, 2.0],
+    [2.0, 1.0],
+    [1.0, 1.0]
+])
+
+W = np.array([
+    [0.2, 0.5, 0.1],
+    [0.4, 0.3, 0.6]
+])
+b = np.array([[0.1, 0.2, 0.1]])
+z = X @ W + b
+_____________________________________________
+c = np.max(z,axis=1)
+d = np.exp(c)
+print(d/np.sum(d))
+print(c)
+______________________________________
+c = z - np.max(z)
+d = np.exp(c)
+e = np.exp(d - np.max(d))
+f = e/np.sum(e)
+print(f)
+print(np.sum(f,axis=1))
+print(np.argmax(f,axis=1,keepdims=True))
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
