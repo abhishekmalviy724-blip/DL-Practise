@@ -602,3 +602,29 @@ w2 = w2 - learning_rate * dw2
 b1 = b1 - learning_rate * db1
 b2 = b2 - learning_rate * db2
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder,StandardScaler
+import tensorflow as tf
+a=pd.read_csv("healthcare_dataset.csv")
+X=a.drop(columns=["Name", "Doctor", "Hospital", "Date of Admission", "Discharge Date"])
+y=a["Test Results"]
+le = LabelEncoder()
+encoded = le.fit_transform(y)
+b = X.copy()
+b = pd.get_dummies(b,drop_first=True)
+b.isnull().sum()
+encoded.dtype
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(b,encoded,test_size=0.2,random_state=42)
+st = StandardScaler()
+y = st.fit_transform(X_train)
+v = st.transform(X_test)
+X_train.shape
+X_test.shape
+y_train.shape
+y_test.shape
+print(len(a))
+print(len(X_train)+len(X_test))
+print(len(a)==len(X_train)+len(X_test))
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
