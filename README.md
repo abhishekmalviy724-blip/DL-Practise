@@ -628,3 +628,46 @@ print(len(a))
 print(len(X_train)+len(X_test))
 print(len(a)==len(X_train)+len(X_test))
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+import pandas as pd
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
+
+a=pd.read_csv("healthcare_dataset.csv")
+
+X=a[["Age","Billing Amount","Room Number"]]
+y=a["Test Results"]
+
+X=X.fillna(X.median(numeric_only=True))
+y=y.fillna(y.mode()[0])
+
+le = LabelEncoder()
+encoded = le.fit_transform(y)
+
+X_train,X_test,y_train,y_test=train_test_split(X,encoded,test_size=0.2,random_state=42)
+
+st = StandardScaler()
+scaledX_train = st.fit_transform(X_train)
+scaledX_test = st.transform(X_test)
+
+model = Sequential([
+    Input(shape=(3,)),
+    Dense(16,activation="relu"),
+    Dense(8,activation="relu"),
+    Dense(3,activation="softmax")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+history = model.fit(scaledX_train,y_train,
+                    epochs=10,
+                    batch_size=32,
+                    validation_split=0.1)
+test_loss,test_accuracy=model.evaluate(scaledX_test,y_test)
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
