@@ -670,4 +670,83 @@ history = model.fit(scaledX_train,y_train,
                     batch_size=32,
                     validation_split=0.1)
 test_loss,test_accuracy=model.evaluate(scaledX_test,y_test)
+____________________________________________________________________________________________
+import pandas as pd
+import numpy as np
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
+
+
+a=pd.read_csv("healthcare_dataset.csv")
+X=a[["Age", "Billing Amount", "Room Number"]]
+y=a["Test Results"]
+X=X.fillna(X.median())
+y=y.fillna(y.mode()[0])
+
+le = LabelEncoder()
+labeld = le.fit_transform(y)
+
+X_train,X_test,y_train,y_test=train_test_split(X,labeld,test_size=0.2,random_state=42)
+
+st = StandardScaler()
+scaled_train = st.fit_transform(X_train)
+scaledy = st.transform(X_test)
+num_classes=len(le.classes_)
+model = Sequential([
+    Input(shape=(3,)),
+    Dense(32,activation="relu"),
+    Dense(16,activation="relu"),
+    Dense(8,activation="softmax"),
+    Dense(num_classes, activation="softmax")
+])
+model.summary()
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+history = model.fit(
+    scaled_train, y_train,
+    epochs=5,
+    batch_size=32,
+    validation_split=0.1
+)
+loss_t,accuracy=model.evaluate(scaledy,y_test)
+pred = model.predict(scaledy)
+print(pred[:5])
+p=np.argmax(pred,axis=1)
+inv = le.inverse_transform(p)
+inv2 = le.inverse_transform(y_test)
+compare = pd.DataFrame({
+    "Actual":inv[:10],
+    "pred":inv2[:10]
+})
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.plot(history.history['accuracy'], label='Training Accuracy', marker='o')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy', marker='o')
+plt.title('Training vs Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.grid(True)
+
+plt.subplot(1, 2, 2)
+plt.plot(history.history['loss'], label='Training Loss', marker='o', color='red')
+plt.plot(history.history['val_loss'], label='Validation Loss', marker='o', color='orange')
+plt.title('Training vs Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
