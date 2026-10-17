@@ -750,3 +750,59 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+import numpy as np
+
+X = np.array([
+    [1.0, 2.0],
+    [3.0, 4.0],
+    [1.0, 6.0],
+    [15.0, 2.0]
+]) 
+
+y = np.array([
+    [1.0],
+    [2.0],
+    [3.0],
+    [4.0]
+]) 
+
+m = len(X)
+
+W1 = np.array([
+    [1.0, 2.0, 3.0, 4.0],
+    [5.0, 6.0, 7.0, 8.0]
+])
+
+b1 = np.array([[0.0, 0.0, 0.0, 0.0]])  
+
+W2 = np.array([
+    [1.0],
+    [2.0],
+    [3.0],
+    [4.0]
+])
+
+b2 = np.array([[0.0]])  
+lr = 0.1
+for i in range(10000):
+    z1 = X @ W1 + b1
+    a1 = np.maximum(0, z1)
+    z2 = a1 @ W2 + b2
+    a2 = 1 / (1 + np.exp(-z2))
+    loss = -np.mean(y * np.log(a2 + 1e-15) + (1 - y) * np.log(1 - a2 + 1e-15))
+    dz2 = a2 - y
+    dw2 = (a1.T @ dz2) / m
+    db2 = np.sum(dz2, axis=0, keepdims=True) / m
+    relu_mask = np.where(z1 > 0, 1.0, 0.0)
+    dz1 = (dz2 @ W2.T) * relu_mask
+    dw1 = (X.T @ dz1) / m
+    db1 = np.sum(dz1, axis=0, keepdims=True) / m
+    w1 = W1 - lr * dw1
+    w2 = W2 - lr * dw2
+    b1 = b1 - lr * db1
+    b2 = b2 - lr * db2
+    final_pred = X * W2 + b2
+    final_loss = -np.mean((a2 - y)**2)
+
+print(final_pred)
+print(final_loss)
