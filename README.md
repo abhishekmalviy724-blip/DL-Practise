@@ -806,3 +806,48 @@ for i in range(10000):
 
 print(final_pred)
 print(final_loss)
+_____________________________________________________________________________________
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, ReLU, Softmax, Dropout, Flatten,Input
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import numpy as np
+from sklearn.metrics import accuracy_score
+from tensorflow.keras.datasets import mnist
+
+
+a=pd.read_csv("healthcare_dataset.csv")
+X=a[["Age","Billing Amount","Room Number"]]
+y=a["Test Results"]
+X=X.fillna(X.median())
+y=y.fillna(y.mode()[0])
+
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+# X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=42)
+
+X_train=X_train/255.0
+X_test=X_test/255.0
+
+model = Sequential([
+    Input(shape=(28,28)),
+    Flatten(),
+    Dense(128, activation="relu"),
+    Dense(10, activation="softmax")
+])
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+model.fit(X_train, y_train, epochs=5)
+test_loss,accuracy=model.evaluate(X_test,y_test)
+pred = model.predict(X_test)
+print(pred[:10])
+print(np.argmax(model.predict(X_test),axis=1))
+import matplotlib.pyplot as plt
+i = 1
+plt.imshow(X_test[i],cmap='gray')
+plt.show()
+_____________________________________________________________________________________
