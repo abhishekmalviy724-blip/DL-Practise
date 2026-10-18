@@ -850,4 +850,39 @@ import matplotlib.pyplot as plt
 i = 1
 plt.imshow(X_test[i],cmap='gray')
 plt.show()
-_____________________________________________________________________________________
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+
+X_train = X_train.reshape(-1,28,28,1)
+X_test = X_test.reshape(-1,28,28,1)
+
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(
+        filters=16,
+        kernel_size=(5,5),
+        activation="relu"
+    )
+])
+model.summary()
+_____________________________________________________
+
+model1 = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(8, (3,3), activation="relu"),
+    MaxPooling2D((2,2))
+])
+model.summary()
+____________________________________________________
+model2 = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(32, (3,3), activation="relu"),
+    MaxPooling2D((2,2)),
+    Conv2D(64, (3,3), activation="relu"),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dense(64, activation="relu"),
+    Dense(10, activation="softmax")
+])
+model.summary()
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
