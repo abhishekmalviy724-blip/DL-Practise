@@ -886,3 +886,37 @@ model2 = Sequential([
 ])
 model.summary()
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from  common_imports import *
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+X_train = X_train/255
+X_test = X_test/255
+
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(16, (5,5),padding="valid",strides=1, activation="relu"),
+    Conv2D(32, (3,3), padding="same",strides=2, activation="relu"),
+    MaxPooling2D(pool_size=(2,2),strides=2),
+])
+model.summary()
+__________________________________________________________________________
+model1 = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(32, (3,3), padding="same",dilation_rate=2,activation="relu")
+])
+model1.summary()
+___________________________________________________________________________
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(16, (3,3), padding="same",dilation_rate=2, activation="relu"),
+    Conv2D(32, (3,3), padding="valid", dilation_rate=1,activation="relu")
+])
+model.summary()
+___________________________________________________________________________
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(8, (3,3), padding="same", activation="relu"),
+    Conv2D(16, (1,1), padding="same", activation="relu"),
+    Conv2D(32, (3,3), padding="same", activation="relu")
+])
+model.summary()
+
