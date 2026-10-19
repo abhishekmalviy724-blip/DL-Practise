@@ -919,4 +919,39 @@ model = Sequential([
     Conv2D(32, (3,3), padding="same", activation="relu")
 ])
 model.summary()
+____________________________________________________________________________
+from common_imports import *
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+X_train = X_train.reshape(-1,28,28,1)
+X_test = X_test.reshape(-1,28,28,1)
+X_train = X_train/255
+X_test = X_test/255
 
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(32,(3,3), activation="relu"),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dense(128,activation="relu"),
+    Dropout(0.6),
+    Dense(10,activation="softmax")
+])
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+stop = EarlyStopping(
+    monitor="val_loss",
+    patience=2,
+    restore_best_weights=True
+)
+model.fit(X_train,
+          y_train,
+          epochs=15,
+          validation_split=0.2,
+          callbacks=[stop])
+loss,accuracy=model.evaluate(X_test,y_test)
+print(loss)
+print(accuracy)
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________
