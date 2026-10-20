@@ -955,3 +955,31 @@ loss,accuracy=model.evaluate(X_test,y_test)
 print(loss)
 print(accuracy)
 _____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+model = MobileNetV2(
+    weights="imagenet",
+    include_top=False,
+    input_shape=(224,224,3),
+)
+model.trainable=False
+
+X = GlobalAveragePooling2D()(model.output)
+X = Dense(128, activation="relu")(X)
+X = Dense(2, activation="softmax")(X)
+model = tf.keras.Model(inputs=model.input, outputs=X)
+model.summary()
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+a = Image.open("05.jpg").convert("RGB")
+img = a.resize((224,224))
+X = np.array(img)
+X = np.expand_dims(X,axis=0)
+X = preprocess_input(X)
+print(X.shape)
+pred = model.predict(X)
+print(pred.shape)
+print(np.max(pred[0])*100)
