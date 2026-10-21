@@ -983,3 +983,71 @@ print(X.shape)
 pred = model.predict(X)
 print(pred.shape)
 print(np.max(pred[0])*100)
+___________________________________________________________________
+from common_imports import *
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
+
+
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+X_train = X_train[:1000]
+X_test = X_test[:1000]
+X_test = X_test[:200]
+y_test = y_test[:200]
+
+X_train = tf.image.resize(
+    X_train[...,np.newaxis],
+    (224,224)
+)
+X_test = tf.image.resize(
+    X_test[...,np.newaxis],
+    (224,224)
+)
+
+X_train = tf.image.grayscale_to_rgb(X_train)
+X_test = tf.image.grayscale_to_rgb(X_test)
+
+
+X_train = preprocess_input(X_train)
+X_test = preprocess_input(X_test)
+
+
+model = MobileNetV2(
+    weights="imagenet",
+    include_top=False,
+    input_shape=(224,224,3)
+)
+
+model.trainable=False
+
+X = GlobalAveragePooling2D()(model.output)
+X = Dense(128, activation="relu")(X)
+X = Dense(10, activation="softmax")(X)
+
+model_f = Model(inputs=model.input, outputs=X)
+
+model_f.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+model_f.fit(X_train,y_train,epochs=2)
+
+loss,accuracy1 = model_f.evaluate(X_test,y_test,verbose=0)
+
+model_f.trainable=True
+
+for i in model.layers[:-20]:
+    i.trainable = False
+    
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.00001),
+    loss = "sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+model.fit(X_train,y_train,epochs=2)
+loss2,accuracy2 = model.evaluate(X_test,y_test,verbose=0)
+
+print(accuracy1)
+print(accuracy2)
+print(accuracy2 - accuracy1)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
