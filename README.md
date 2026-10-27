@@ -1051,3 +1051,26 @@ print(accuracy1)
 print(accuracy2)
 print(accuracy2 - accuracy1)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+X_train = X_train.reshape(-1,28,28,1)
+X_test = X_test.reshape(-1,28,28,1)
+
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Flatten(),
+    Dense(128, activation="relu"),
+    Dense(64, activation="relu"),
+    Dense(10, activation="softmax"),
+])
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+hist = model.fit(X_train,y_train,epochs=1,validation_data=(X_test,y_test))
+print(model.evaluate(X_test,y_test))
+__________________________________________________________________________________
