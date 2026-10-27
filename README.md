@@ -1074,3 +1074,24 @@ model.compile(
 hist = model.fit(X_train,y_train,epochs=1,validation_data=(X_test,y_test))
 print(model.evaluate(X_test,y_test))
 __________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.applications.mobilenet_v2 import decode_predictions
+
+img = load_img("04.jpg",target_size=(224,224))
+img = img_to_array(img)
+img = np.expand_dims(img,axis=0)
+img = preprocess_input(img)
+
+model = MobileNetV2(
+    weights="imagenet",
+    include_top=True,
+    input_shape=(224,224,3)
+)
+
+pred = model.predict(img)
+result = decode_predictions(pred,top=3)
+
+
+for item in result[0]:
+    print("Class:", item[1], "Confidence:", round(item[2] * 100, 2), "%")
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
