@@ -1125,4 +1125,21 @@ for batch in datagen.flow(img, batch_size=1):
         break
 
 plt.show()
+
+
+modell = Sequential([
+    Input(shape=(224,224,3)),
+    Conv2D(32,(3,3),activation="relu"),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dense(64, activation="relu"),
+    Dense(1, activation="sigmoid")
+])
+modell.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+pred = modell.predict(img)
+pred
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
