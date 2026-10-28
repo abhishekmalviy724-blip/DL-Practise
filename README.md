@@ -1095,3 +1095,34 @@ result = decode_predictions(pred,top=3)
 for item in result[0]:
     print("Class:", item[1], "Confidence:", round(item[2] * 100, 2), "%")
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.utils import load_img, img_to_array
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+img = load_img("34.jpg",target_size=(224,224))
+img = img_to_array(img)
+img = np.expand_dims(img,axis=0)
+
+datagen = ImageDataGenerator(
+    rescale=1./255.0,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    brightness_range=(0.5, 1.5)
+)
+
+count = 0
+
+plt.figure(figsize=(9, 3))
+
+for batch in datagen.flow(img, batch_size=1):
+    plt.subplot(1, 3, count + 1)
+    plt.imshow(batch[0])
+    plt.axis("off")
+
+    count += 1
+
+    if count >= 3:
+        break
+
+plt.show()
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
