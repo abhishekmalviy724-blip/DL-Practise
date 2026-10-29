@@ -1143,3 +1143,23 @@ modell.compile(
 pred = modell.predict(img)
 pred
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.utils import load_img, img_to_array
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input, decode_predictions
+
+img = load_img("04.jpg", target_size=(224, 224))
+img = img_to_array(img)
+img = np.expand_dims(img,axis=0)
+img = preprocess_input(img)
+
+model = MobileNetV2(
+    weights="imagenet",
+    include_top=True,
+    input_shape=(224,224,3)
+)
+pred = model.predict(img)
+top_3 = decode_predictions(pred,top=3)[0]
+
+for _,name,confidance in top_3:
+    print(name,confidance*100)
