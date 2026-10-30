@@ -1200,3 +1200,70 @@ loss,accuracy=model.evaluate(X_test,y_test)
 print(loss)
 print(accuracy)
 print(accuracy_score(y_test, pred))
+____________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.layers import (
+    RandomFlip,
+    RandomRotation,
+    RandomZoom,
+    RandomTranslation,
+    RandomContrast
+)
+
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+
+X_train = X_train.reshape(-1,28,28,1)
+X_test = X_test.reshape(-1,28,28,1)
+
+agumation = Sequential([
+    RandomFlip("horizontal"),
+    RandomRotation(0.1),
+    RandomZoom(0.1),
+    RandomTranslation(0.1,0.1),
+    RandomContrast(0.2)
+])
+
+model = Sequential([
+    Input(shape=(28,28,1)),
+    agumation,
+    Conv2D(32,(3,3),activation="relu"),
+    MaxPooling2D((2,2)),
+    Conv2D(64, (3,3), activation="relu"),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dropout(0.3),
+    Dense(128, activation="relu"),
+    Dropout(0.3),
+    Dense(10, activation="softmax")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+stops = EarlyStopping(
+    monitor="val_loss",
+    patience=3,
+    restore_best_weights=True
+)
+history = model.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    validation_split=0.2,
+    callbacks=[stops]
+)
+
+pred = model.predict(X_test)
+pred = np.argmax(pred,axis=1)
+
+loss,accuracy=model.evaluate(X_test,y_test)
+print(loss)
+print(accuracy)
+print(accuracy(y_test,pred))
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
