@@ -1163,3 +1163,40 @@ top_3 = decode_predictions(pred,top=3)[0]
 
 for _,name,confidance in top_3:
     print(name,confidance*100)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+
+(X_train,y_train),(X_test,y_test)=mnist.load_data()
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+X_train = X_train.reshape(-1,28,28,1)
+X_test = X_test.reshape(-1,28,28,1)
+
+model = Sequential([
+    Input(shape=(28,28,1)),
+    Conv2D(32, (3,3), activation="relu"),
+    MaxPooling2D((2,2)),
+    Flatten(),
+    Dropout(0.3),
+    Dense(10, activation="softmax")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+stop = EarlyStopping(
+    monitor="val_loss",
+    patience=3,
+    restore_best_weights=True
+)
+
+model.fit(X_train,y_train,epochs=20,validation_data=(X_test,y_test),callbacks=[stop])
+pred = model.predict(X_test)
+pred = np.argmax(pred, axis=1)
+loss,accuracy=model.evaluate(X_test,y_test)
+print(loss)
+print(accuracy)
+print(accuracy_score(y_test, pred))
