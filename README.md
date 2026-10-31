@@ -1295,3 +1295,58 @@ print(accuracy)
 print(confusion_matrix(y_test,pred))
 print(classification_report(y_test,pred))
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Input, Embedding, SimpleRNN, LSTM, Dense
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+
+(X_train,y_train),(X_test,y_test)=imdb.load_data(num_words=10000)
+X_train = pad_sequences(X_train, maxlen=200, padding="post", truncating="post")
+X_test = pad_sequences(X_test, maxlen=200, padding="post", truncating="post")
+
+model = Sequential([
+    Input(shape=(200,)),
+    Embedding(input_dim=10000, output_dim=128),
+    GRU(128),
+    Dense(64, activation="relu"),
+    Dense(1, activation="sigmoid")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.fit(X_train, y_train, 
+          epochs=1,
+          batch_size=64,
+          validation_split=0.1)
+
+loss,accuacy=model.evaluate(X_test,y_test)
+
+model2 = Sequential([
+    Input(shape=(200,)),
+    Embedding(input_dim=10000,output_dim=64),
+    LSTM(64),
+    Dense(32, activation="relu"),
+    Dense(1, activation="sigmoid")
+])
+
+model2.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+model2.fit(X_train,
+           y_train,
+           batch_size=64,
+           validation_split=0.2)
+
+loss,accuacy=model2.evaluate(X_test,y_test)
+
+print(loss)
+print(accuacy)
