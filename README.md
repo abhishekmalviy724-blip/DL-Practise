@@ -1350,3 +1350,36 @@ loss,accuacy=model2.evaluate(X_test,y_test)
 
 print(loss)
 print(accuacy)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from tensorflow.keras.layers import Input, LSTM, Dense, Dropout
+from tensorflow.keras.layers import GRU
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+X_train = X_train / 255.0
+X_test = X_test / 255.0
+
+model = Sequential([
+    Input(shape=(28, 28)),
+    Bidirectional(LSTM(64, return_sequences=True)),
+    Dropout(0.3),
+    Bidirectional(LSTM(64)),
+    Dense(32, activation="relu"),
+    Dense(10, activation="softmax")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.fit(X_train,y_train,
+          epochs=1, validation_split=0.2)
+
+pred = model.predict(X_test)
+pred = np.argmax(pred, axis=1)
+loss,accuracy=model.evaluate(X_test,y_test)
+print(loss)
+print(accuracy)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
