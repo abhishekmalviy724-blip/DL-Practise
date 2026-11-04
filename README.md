@@ -1383,3 +1383,67 @@ loss,accuracy=model.evaluate(X_test,y_test)
 print(loss)
 print(accuracy)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+X_train = X_train.astype("float32") / 255.0
+X_test = X_test.astype("float32") / 255.0
+
+# Resize images
+X_train = tf.convert_to_tensor(X_train, dtype=tf.float32)
+
+X_train = tf.expand_dims(X_train, axis=-1)
+
+X_train = tf.image.resize(X_train, (224, 224))
+# Convert grayscale to RGB
+X_train = tf.image.grayscale_to_rgb(X_train)
+X_test = tf.image.grayscale_to_rgb(X_test)
+
+# MobileNetV2 preprocessing
+X_train = preprocess_input(X_train * 255.0)
+X_test = preprocess_input(X_test * 255.0)
+
+base_model = MobileNetV2(
+    weights="imagenet",
+    include_top=False,
+    input_shape=(224, 224, 3)
+)
+
+base_model.trainable = False
+
+model = Sequential([
+    base_model,
+    GlobalAveragePooling2D(),
+    Dense(64, activation="relu"),
+    Dropout(0.3),
+    Dense(10, activation="softmax")
+])
+
+model.compile(
+    optimizer="adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.fit(
+    X_train, y_train,
+    epochs=5,
+    validation_split=0.2
+)
+
+# Fine-tuning
+base_model.trainable = True
+
+for layer in base_model.layers[:-20]:
+    layer.trainable = False
+
+model.compile(
+    optimizer=Adam(learning_rate=0.00001),
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.fit(X_train, y_train, epochs=5)
+
+model.evaluate(X_test, y_test)
