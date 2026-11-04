@@ -1383,33 +1383,37 @@ loss,accuracy=model.evaluate(X_test,y_test)
 print(loss)
 print(accuracy)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
-from common_imports import *
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
-X_train = X_train.astype("float32") / 255.0
-X_test = X_test.astype("float32") / 255.0
+def preprocess(x, y):
+    x = tf.cast(x, tf.float32)
+    x = tf.expand_dims(x, -1)                 # (28,28) -> (28,28,1)
+    x = tf.image.resize(x, (224, 224))        # -> (224,224,1)
+    x = tf.image.grayscale_to_rgb(x)          # -> (224,224,3)
+    x = preprocess_input(x)                   # expects raw 0-255, scales to [-1,1]
+    return x, y
 
-# Resize images
-X_train = tf.convert_to_tensor(X_train, dtype=tf.float32)
+BATCH = 64
 
-X_train = tf.expand_dims(X_train, axis=-1)
+# Validation split manually (tf.data pe validation_split kaam nahi karta)
+val_size = 12000
+X_val, y_val = X_train[:val_size], y_train[:val_size]
+X_tr, y_tr = X_train[val_size:], y_train[val_size:]
 
-X_train = tf.image.resize(X_train, (224, 224))
-# Convert grayscale to RGB
-X_train = tf.image.grayscale_to_rgb(X_train)
-X_test = tf.image.grayscale_to_rgb(X_test)
+def make_ds(x, y, shuffle=False):
+    ds = tf.data.Dataset.from_tensor_slices((x, y))
+    if shuffle:
+        ds = ds.shuffle(10000)
+    return ds.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE) \
+             .batch(BATCH).prefetch(tf.data.AUTOTUNE)
 
-# MobileNetV2 preprocessing
-X_train = preprocess_input(X_train * 255.0)
-X_test = preprocess_input(X_test * 255.0)
+train_ds = make_ds(X_tr, y_tr, shuffle=True)
+val_ds   = make_ds(X_val, y_val)
+test_ds  = make_ds(X_test, y_test)
 
-base_model = MobileNetV2(
-    weights="imagenet",
-    include_top=False,
-    input_shape=(224, 224, 3)
-)
-
+base_model = MobileNetV2(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
 base_model.trainable = False
 
 model = Sequential([
@@ -1420,30 +1424,21 @@ model = Sequential([
     Dense(10, activation="softmax")
 ])
 
-model.compile(
-    optimizer="adam",
-    loss="sparse_categorical_crossentropy",
-    metrics=["accuracy"]
-)
+model.compile(optimizer="adam",
+              loss="sparse_categorical_crossentropy",
+              metrics=["accuracy"])
 
-model.fit(
-    X_train, y_train,
-    epochs=5,
-    validation_split=0.2
-)
+model.fit(train_ds, validation_data=val_ds, epochs=5)
 
 # Fine-tuning
 base_model.trainable = True
-
 for layer in base_model.layers[:-20]:
     layer.trainable = False
 
-model.compile(
-    optimizer=Adam(learning_rate=0.00001),
-    loss="sparse_categorical_crossentropy",
-    metrics=["accuracy"]
-)
+model.compile(optimizer=Adam(learning_rate=1e-5),
+              loss="sparse_categorical_crossentropy",
+              metrics=["accuracy"])
 
-model.fit(X_train, y_train, epochs=5)
+model.fit(train_ds, validation_data=val_ds, epochs=5)
 
-model.evaluate(X_test, y_test)
+model.evaluate(test_ds)
