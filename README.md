@@ -1442,3 +1442,39 @@ model.compile(optimizer=Adam(learning_rate=1e-5),
 model.fit(train_ds, validation_data=val_ds, epochs=5)
 
 model.evaluate(test_ds)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import LSTM, Input, Dense, Embedding, Bidirectional
+from tensorflow.keras.layers import GlobalAveragePooling1D
+
+given = [
+    'har timestep ka output',
+    'sirf final timestep ka output',
+    'English sentences par',
+    'aur Stacked LSTM',
+    'model banao aur output'
+]
+
+token = Tokenizer()
+token.fit_on_texts(given)
+
+seq = token.texts_to_sequences(given)
+
+print(token.word_index)
+print(seq)
+
+padding = pad_sequences(seq, maxlen=4, padding="post")
+
+model = Sequential([
+    Input(shape=(4,)),
+    Embedding(input_dim=len(token.word_index)+1, output_dim=10),
+    Bidirectional(LSTM(32, return_sequences=True)),
+    Bidirectional(LSTM(32))
+])
+
+output = model.predict(padding)
+print(output)
+print(output.shape)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
