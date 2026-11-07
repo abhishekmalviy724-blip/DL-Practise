@@ -1478,3 +1478,18 @@ output = model.predict(padding)
 print(output)
 print(output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+s = "Python is very useful for machine learning"
+co = s.lower().split()
+
+X = []
+y = []
+
+for i in range(2, len(co) - 2):
+    context = co[i -2:i] + co[i+1: i+2 +1]
+    target = co[i]
+    X.append(context)
+    y.append(target)
+    
+    
+print(X)
+print(y)
