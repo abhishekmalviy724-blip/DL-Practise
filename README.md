@@ -1493,3 +1493,68 @@ for i in range(2, len(co) - 2):
     
 print(X)
 print(y)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import LSTM, Input, Dense, Embedding, Bidirectional
+from tensorflow.keras.layers import GlobalAveragePooling1D
+
+a =  "I love deep learning and machine learning"
+word = a.lower().split()
+
+X = []
+y = []
+
+for i in range(2, len(word)-2):
+    context = word[i-2:i] +  word[i+1:i+3]
+    text = word[i]
+    X.append(context)
+    y.append(text)
+    
+token = Tokenizer()
+token.fit_on_texts(word)
+
+seq1 = token.texts_to_sequences(X)
+seq2 = token.texts_to_sequences(y)
+
+seq3 = np.array(seq1)
+seq4 = np.array(seq2).flatten()
+
+size = len(token.word_index)+1
+
+model = Sequential([
+    Input(shape=(4,)),
+    Embedding(input_dim=size, output_dim=10),
+    GlobalAveragePooling1D(),
+    Dense(32, activation="relu"),
+    Dense(size, activation="softmax")
+])
+
+model.compile(
+    optimizer = "adam",
+    loss="sparse_categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+model.fit(seq3,seq4, epochs=100, verbose=1)
+
+output = model.predict(seq3)
+
+print(token.word_index)
+print(X)
+print(y)
+print(np.argmax(output, axis=1))
+___________________________________________________
+sample = ["i", "love", "learning", "and"]
+
+sample_seq = token.texts_to_sequences([sample])
+
+pred = model.predict(np.array(sample_seq), verbose=0)
+
+pred_id = np.argmax(pred, axis=1)[0]
+
+pred_word = token.index_word[pred_id]
+
+print("Predicted word:", pred_word)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
