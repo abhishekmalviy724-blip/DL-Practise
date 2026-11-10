@@ -1607,3 +1607,54 @@ print(token.word_index)
 
 for i in range(len(y)):
     print(y[i], token.index_word[pred[i]])
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.layers import Input, Dense, Embedding, GlobalAveragePooling1D
+
+s = "Deep learning is transforming modern healthcare systems"
+word = s.lower().split()
+
+X = []
+y = []
+
+for i in range(1, len(word)-1):
+    context = word[i-1:i] + word[i+1:i+2]
+    target = word[i]
+    for j in context:
+        X.append(target)
+        y.append(1)
+        n = random.choice(word)
+        while n in context or n == target:
+            n = random.choice(word)
+            X.append([target, n])
+            y.append(0)
+print(X)
+print(y)
+
+token = Tokenizer()
+token.fit_on_texts(word)
+
+seq1 = token.texts_to_sequences(X)
+seq2 = token.texts_to_sequences([[i] for i in y])
+
+seq1 = np.array(seq1)
+seq2 = np.array(seq2).reshape(-1)
+
+model = Sequential([
+    Input(shape=(1,)),
+    Embedding(input_dim=len(token.word_index)+1, output_dim=5),
+    GlobalAveragePooling1D(),
+    Dense(len(token.word_index)+1, activation="softmax")
+])
+
+model.compile(
+    optimizer = "adam",
+    loss = 'sparse_categorical_crossentropy',
+    metrics = ["accuracy"]
+)
+
+model.fit(seq1, seq2, epochs=100, verbose=1)
+
+output = model.predict(seq1)
+print(np.argmax(output, axis=1))
