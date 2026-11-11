@@ -1724,4 +1724,21 @@ top2 = np.argsort(output[0])[::-1][:2]
 
 for i in top2:
     print(index_word.get(i, "Unknown"), output[0][i])
+
+________________________________________________________________
+s = 'i m abhishek malviy'
+word = s.lower().split()
+
+vocab = sorted(set(word))
+
+
+matrix = np.zeros((len(vocab), len(vocab)))
+for i in range(len(word)):
+    for j in range(max(0, i-2), min(len(word), i+3)):
+        if i!=j:
+            row = vocab.index(word[i])
+            col = vocab.index(word[j])
+            matrix[row][col]+=1
+print(vocab)
+print(matrix)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
