@@ -1742,3 +1742,47 @@ for i in range(len(word)):
 print(vocab)
 print(matrix)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.layers import Input, Dense, Embedding, GlobalAveragePooling1D
+
+s = 'i m abhishek malviy'
+word = s.lower().split()
+
+vocab = sorted(set(word))
+matrix = np.zeros((len(vocab), len(vocab)))
+for i in range(len(word)):
+    for j in range(max(0, i-2), min(len(word), i+3)):
+        if  i !=j:
+            row = vocab.index(word[i])
+            col = vocab.index(word[j])
+            matrix[row][col]+=1
+print(vocab)
+print(matrix)
+
+row,col = np.nonzero(matrix)
+count = matrix[row, col]
+print(row)
+print(col)
+print(count)
+
+df = pd.DataFrame({
+    'Word':[vocab[i] for i in row],
+    'context':[vocab[i] for i in col],
+    'count': count
+})
+print(df)
+
+log_count = np.log1p(count)
+print(log_count)
+
+x = 50
+print(min(1,(x/100)**0.75))
+
+weight = np.minimum(1, np.power(count/100,0.75))
+
+actual = 2.0
+pred = 1.5
+loss = pred - np.log(actual)**2
+
+print(weight*loss)
