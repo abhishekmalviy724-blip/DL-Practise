@@ -1786,3 +1786,48 @@ pred = 1.5
 loss = pred - np.log(actual)**2
 
 print(weight*loss)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.layers import Input, Dense, Embedding, GlobalAveragePooling1D
+
+
+s = "I love deep learning because it helps computers understand human language."
+encoder_output = tf.constant([
+    [0.2, 0.5, 0.1],
+    [0.3, 0.8, 0.4],
+    [0.6, 0.2, 0.9],
+    [0.7, 0.4, 0.5],
+    [0.1, 0.3, 0.6]
+])
+
+print(encoder_output.shape)
+
+context_vextore = tf.reduce_mean(encoder_output, axis=0)
+print(context_vextore)
+
+Q = encoder_output
+K = encoder_output
+V = encoder_output
+print(Q.shape, K.shape, V.shape)
+
+score = tf.matmul(Q,K, transpose_b=True)
+print(score)
+
+dk = tf.cast(tf.shape(K)[1], tf.float32)
+scaled = score / tf.sqrt(dk)
+attantion = tf.nn.softmax(scaled, axis=-1)
+print(attantion)
+
+output = tf.matmul(attantion, V)
+print(output)
+
+d = tf.ones((4,4))
+mask = tf.linalg.band_part(d,-1,0)
+print(mask)
+
+mask = tf.linalg.band_part(d, -1, 0)
+
+masked = tf.where(mask == 1, score, -1e9)
+
+print(masked)
