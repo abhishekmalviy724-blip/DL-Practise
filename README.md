@@ -1867,4 +1867,11 @@ f = tf.where(e==0, -1e9, scaled)
 g = tf.nn.softmax(f,axis=-1)
 
 print(tf.matmul(g,V))
+__________________________________________________________
+x = tf.random.normal((1,4,8))
+y = tf.random.normal((1,6,8))
+z = tf.random.normal((1,6,8))
+m = tf.keras.layers.MultiHeadAttention(num_heads=2,key_dim=4)
+output = m(query=x,key=y,value=z, use_causal_mask=True)
+print(output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
