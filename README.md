@@ -1831,3 +1831,40 @@ mask = tf.linalg.band_part(d, -1, 0)
 masked = tf.where(mask == 1, score, -1e9)
 
 print(masked)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.layers import Input, Dense, Embedding, GlobalAveragePooling1D
+
+a = 'i m Abhishek Malviy'
+encode = tf.constant([
+    [0.1,0.2,0.3,0.4],
+    [0.1,0.2,0.3,0.4],
+    [0.1,0.2,0.3,0.4],
+    [0.1,0.2,0.3,0.4]
+])
+
+print(encode.shape)
+
+Q = tf.random.normal((4,3))
+K = tf.random.normal((4,3))
+V = tf.random.normal((4,3))
+
+print(Q.shape, K.shape, V.shape)
+
+b = tf.matmul(Q,K, transpose_b=True)
+
+scaled = tf.cast(tf.shape(K)[1], tf.float32)
+scaled = b / tf.sqrt(scaled)
+
+c = tf.ones((4,4))
+d = tf.linalg.band_part(c, -1,0)
+
+e = tf.nn.softmax(d,axis=-1)
+
+f = tf.where(e==0, -1e9, scaled)
+
+g = tf.nn.softmax(f,axis=-1)
+
+print(tf.matmul(g,V))
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
