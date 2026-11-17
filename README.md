@@ -1877,7 +1877,7 @@ print(output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
 from common_imports import *
 
-X  = tf.constant([[1, 0, 1, 0], [0, 2, 0, 2], [1, 1, 1, 1]], dtype=tf.float32)  # 3 words, 4-dim
+X  = tf.constant([[1, 0, 1, 0], [0, 2, 0, 2], [1, 1, 1, 1]], dtype=tf.float32)  
 Wq = tf.constant([[1, 0], [0, 1], [1, 0], [0, 1]], dtype=tf.float32)
 Wk = tf.constant([[1, 0], [0, 1], [1, 0], [0, 1]], dtype=tf.float32)
 Wv = tf.constant([[1, 1], [0, 1], [1, 0], [0, 0]], dtype=tf.float32)
@@ -1896,3 +1896,41 @@ weight = tf.nn.softmax(scaled, axis=-1)
 output = tf.matmul(weight, V)
 print(weight,weight.shape)
 print(output, output.shape)
+__________________________________________________________________________________________________
+from common_imports import *
+
+x = tf.random.normal((3, 8, 24))
+num_heads = 3
+batch_size = 3
+seq_leanght = 8
+depth = 24 // num_heads
+
+x = tf.reshape(x, (batch_size,seq_leanght,num_heads,depth))
+x = tf.transpose(x,perm=[0,2,3,1])
+print(x)
+print(x.shape)
+
+Q = tf.random.normal((2, 2, 5, 4))
+K = tf.random.normal((2, 2, 5, 4))
+V = tf.random.normal((2, 2, 5, 4))
+
+
+calulate = tf.matmul(Q,K, transpose_b=True)
+
+scaled = tf.cast(tf.shape(K)[-1], tf.float32)
+scaled = calulate / tf.sqrt(scaled)
+
+soft = tf.nn.softmax(scaled, axis=-1)
+
+attention = tf.matmul(soft, V)
+print(attention)
+print(attention.shape)
+
+concat = tf.transpose(attention, perm=[0,2,1,3])
+contact = tf.reshape(concat, (2,5,8))
+print(concat.shape)
+
+dense = tf.keras.layers.Dense(16)
+output = dense(concat)
+print(output)
+print(output.shape)
