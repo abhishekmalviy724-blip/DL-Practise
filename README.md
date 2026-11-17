@@ -1899,38 +1899,40 @@ print(output, output.shape)
 __________________________________________________________________________________________________
 from common_imports import *
 
-x = tf.random.normal((3, 8, 24))
-num_heads = 3
-batch_size = 3
-seq_leanght = 8
-depth = 24 // num_heads
-
-x = tf.reshape(x, (batch_size,seq_leanght,num_heads,depth))
-x = tf.transpose(x,perm=[0,2,3,1])
-print(x)
-print(x.shape)
-
-Q = tf.random.normal((2, 2, 5, 4))
-K = tf.random.normal((2, 2, 5, 4))
-V = tf.random.normal((2, 2, 5, 4))
+x = tf.random.normal((2,5,8))
+num_heads = 2
+batch_size = 2
+seq_leanght = 5
+depth = 8 // num_heads
 
 
-calulate = tf.matmul(Q,K, transpose_b=True)
+Q = tf.keras.layers.Dense(8)(x)
+K = tf.keras.layers.Dense(8)(x)
+V = tf.keras.layers.Dense(8)(x)
+
+Q = tf.reshape(Q, (batch_size, seq_leanght, num_heads, depth))
+K = tf.reshape(K, (batch_size, seq_leanght, num_heads, depth))
+V = tf.reshape(V, (batch_size, seq_leanght, num_heads, depth))
+
+Q = tf.transpose(Q, perm=[0,2,1,3])
+K = tf.transpose(K, perm=[0,2,1,3])
+V = tf.transpose(V, perm=[0,2,1,3])
+
+calculate = tf.matmul(Q,K, transpose_b=True)
 
 scaled = tf.cast(tf.shape(K)[-1], tf.float32)
-scaled = calulate / tf.sqrt(scaled)
+scaled = calculate / tf.sqrt(scaled)
+
+attention = tf.matmul(scaled, V)
 
 soft = tf.nn.softmax(scaled, axis=-1)
-
 attention = tf.matmul(soft, V)
-print(attention)
-print(attention.shape)
-
 concat = tf.transpose(attention, perm=[0,2,1,3])
-contact = tf.reshape(concat, (2,5,8))
+concat = tf.reshape(concat, (2, 5, 8))
 print(concat.shape)
 
-dense = tf.keras.layers.Dense(16)
+dense = tf.keras.layers.Dense(12)
 output = dense(concat)
 print(output)
 print(output.shape)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
