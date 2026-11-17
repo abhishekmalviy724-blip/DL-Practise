@@ -1875,3 +1875,24 @@ m = tf.keras.layers.MultiHeadAttention(num_heads=2,key_dim=4)
 output = m(query=x,key=y,value=z, use_causal_mask=True)
 print(output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+
+X  = tf.constant([[1, 0, 1, 0], [0, 2, 0, 2], [1, 1, 1, 1]], dtype=tf.float32)  # 3 words, 4-dim
+Wq = tf.constant([[1, 0], [0, 1], [1, 0], [0, 1]], dtype=tf.float32)
+Wk = tf.constant([[1, 0], [0, 1], [1, 0], [0, 1]], dtype=tf.float32)
+Wv = tf.constant([[1, 1], [0, 1], [1, 0], [0, 0]], dtype=tf.float32)
+
+Q = X @ Wq
+K = X @ Wk
+V = X @ Wv
+
+score = tf.matmul(Q,K, transpose_b=True)
+
+scaled = tf.cast(tf.shape(K)[-1], tf.float32)
+scaled = score / tf.sqrt(scaled)
+
+weight = tf.nn.softmax(scaled, axis=-1)
+
+output = tf.matmul(weight, V)
+print(weight,weight.shape)
+print(output, output.shape)
