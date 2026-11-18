@@ -1936,15 +1936,64 @@ output = dense(concat)
 print(output)
 print(output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
-x = tf.random.normal((2,6,16))
-m = tf.keras.layers.MultiHeadAttention(
-    num_heads=4, key_dim=4
+from common_imports import *
+
+# Encoder input
+enc_input = tf.random.normal((2, 5, 8))
+
+# Decoder input
+dec_input = tf.random.normal((2, 6, 8))
+
+# Self Attention
+enc_attn = tf.keras.layers.MultiHeadAttention(
+    num_heads=2, key_dim=4
+)(query=enc_input, key=enc_input, value=enc_input)
+
+enc_add = tf.keras.layers.Add()([enc_input, enc_attn])
+enc_norm = tf.keras.layers.LayerNormalization()(enc_add)
+
+# FFN
+enc_ffn = tf.keras.layers.Dense(32, activation='relu')(enc_norm)
+enc_ffn = tf.keras.layers.Dense(8)(enc_ffn)
+
+encoder_output = tf.keras.layers.LayerNormalization()(
+    tf.keras.layers.Add()([enc_norm, enc_ffn])
 )
 
-aten = m(query=x,key=x,value=x,training=True)
-res = x + aten
-ln = tf.keras.layers.LayerNormalization()
-ff = Dense(64, activation='relu')
-ress = res + aten
-ln = tf.keras.layers.LayerNormalization()
-print(ln.shape)
+
+# Masked Self Attention
+dec_attn = tf.keras.layers.MultiHeadAttention(
+    num_heads=2, key_dim=4
+)(
+    query=dec_input,
+    key=dec_input,
+    value=dec_input,
+    use_causal_mask=True
+)
+
+dec_add = tf.keras.layers.Add()([dec_input, dec_attn])
+dec_norm = tf.keras.layers.LayerNormalization()(dec_add)
+
+# Cross Attention
+cross_attn = tf.keras.layers.MultiHeadAttention(
+    num_heads=2, key_dim=4
+)(
+    query=dec_norm,
+    key=encoder_output,
+    value=encoder_output
+)
+
+cross_add = tf.keras.layers.Add()([dec_norm, cross_attn])
+cross_norm = tf.keras.layers.LayerNormalization()(cross_add)
+
+# Decoder FFN
+dec_ffn = tf.keras.layers.Dense(32, activation='relu')(cross_norm)
+dec_ffn = tf.keras.layers.Dense(8)(dec_ffn)
+
+decoder_output = tf.keras.layers.LayerNormalization()(
+    tf.keras.layers.Add()([cross_norm, dec_ffn])
+)
+
+print("Encoder:", encoder_output.shape)
+print("Decoder:", decoder_output.shape)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
