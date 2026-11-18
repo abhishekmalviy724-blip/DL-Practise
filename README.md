@@ -1936,3 +1936,15 @@ output = dense(concat)
 print(output)
 print(output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+x = tf.random.normal((2,6,16))
+m = tf.keras.layers.MultiHeadAttention(
+    num_heads=4, key_dim=4
+)
+
+aten = m(query=x,key=x,value=x,training=True)
+res = x + aten
+ln = tf.keras.layers.LayerNormalization()
+ff = Dense(64, activation='relu')
+ress = res + aten
+ln = tf.keras.layers.LayerNormalization()
+print(ln.shape)
