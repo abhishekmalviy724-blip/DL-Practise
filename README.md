@@ -1997,3 +1997,17 @@ decoder_output = tf.keras.layers.LayerNormalization()(
 print("Encoder:", encoder_output.shape)
 print("Decoder:", decoder_output.shape)
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+
+v_size = 1000
+seq_len = 5
+wmb = 16
+
+x = tf.random.uniform(
+    (2,seq_len),minval=0,maxval=v_size,dtype=tf.int32
+)
+emb = tf.keras.layers.Embedding(
+    input_dim=v_size, output_dim=wmb
+)
+
+print(emb(x).shape)
