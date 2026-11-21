@@ -2011,3 +2011,14 @@ emb = tf.keras.layers.Embedding(
 )
 
 print(emb(x).shape)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
+from common_imports import *
+from transformers import AutoTokenizer
+
+token = AutoTokenizer.from_pretrained('bert-base-uncased')
+santence = ' I Am Abhishek Malviy'
+tokens = tokenizer.tokenize(santence)
+token_ids = tokenizer.convert_tokens_to_ids(tokens)
+print(tokens)
+print(token_ids)
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________
